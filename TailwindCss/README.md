@@ -212,7 +212,7 @@ export const spacingScale = {
 
 ## 📄 许可证
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+仓库根目录提供了 [LICENSE](../../LICENSE) 文件，当前为 MIT License。
 
 ## 🙏 致谢
 

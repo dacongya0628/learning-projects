@@ -1,0 +1,11 @@
+/* 基础 reset：给全屏背景和绝对定位控制项提供干净的默认环境。 */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body{
+    /* wrapper 和 body 都必须撑满高度，画布才有完整可用区域。 */
+    height: 100%;
+}
