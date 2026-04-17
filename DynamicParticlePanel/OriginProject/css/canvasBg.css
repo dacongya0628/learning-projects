@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+.wrapper {
+    height: 100%;
+}
+
+
+.inputBox {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #fff;
+    padding: 5px 0;
+    z-index: 9;
+    color: #fff;
+    line-height: 1;
+    font-size: 16px;
+}
+
+.inputBox.two {
+    top: 60px;
+}
+
+.inputBox.thr {
+    top: 100px;
+}
+
+.inputBox.four {
+    top: 140px;
+    font-size: 12px;
+    color: rgb(175, 173, 173);
+}
+
+.inputBox.four a{
+    text-decoration: none;
+    color: rgb(175, 173, 173);
+}
+
+.inputBox.thr .type {
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.inputBox.thr .type.active {
+    color: yellow;
+}
+
+input {
+    background: none;
+    outline: none;
+    border: none;
+    color: #fff;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
+.loadTip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 150px;
+    background: #000;
+    color: #fff;
+    padding: 15px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    z-index: 99;
+    box-shadow: 0px 0px 10px #fff;
+}
+
+.loading {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-image: linear-gradient(red, yellow, green, blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-animation: myLoading 0.5 infinite;
+    animation: myLoading 0.5s infinite;
+}
+
+
+@-webkit-keyframes myLoading {
+    from {
+        left: 0px;
+    }
+
+    to {
+        left: 200px;
+    }
+}
+
+@keyframes myLoading {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    50% {
+        transform: rotateX(180deg) rotateY(180deg);
+    }
+
+    100% {
+        transform: rotateX(360deg) rotateY(360deg);
+    }
+}
+
+.cover {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #000;
+}
