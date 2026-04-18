@@ -16,7 +16,7 @@ class Plane {
         // 战机移动速度
         this.speed = 3;
         // 子弹间隔时间
-        this.shootInterval = 500;
+        this.shootInterval = 300;
         // 上一次发射时间
         this.lastShootTime = 0
     }
@@ -65,9 +65,12 @@ class Plane {
             this.lastShootTime = time;
             return this.shoot();
         }
-
         return null
-
+    }
+    // 跟随手指移动
+    updateByTouchMove(x, y) {
+        this.x = x - 15;
+        this.y = y - 15;
     }
     // 射击
     shoot() {

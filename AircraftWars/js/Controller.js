@@ -40,7 +40,6 @@ class Controller {
     initEvents() {
         // 按键按下
         window.addEventListener('keydown', (e) => {
-            console.log('按下')
             // e.repeat 表示按住键时的连续触发，这里忽略
             if (!e.repeat) {
                 this.handleKey(e, true);

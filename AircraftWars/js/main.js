@@ -18,6 +18,10 @@ var Main = {
         this.resizeCanvas();
         this.initImages();
 
+
+        this.canvasEl.addEventListener('touchmove', (ev) => {
+            this.touchmove(ev)
+        })
     },
     // 设置 canvas 宽高，逻辑坐标保持 CSS 像素，物理像素交给 DPR
     resizeCanvas() {
@@ -130,6 +134,16 @@ var Main = {
             })
         })
     },
+    // H5端手指触控
+    touchmove(ev) {
+        const touch = ev.touches[0]
+
+        const x = touch.clientX
+        const y = touch.clientY
+
+        console.log(x, y)
+        this.plane.updateByTouchMove(x, y)
+    },
     // 开始游戏
     gameStar() {
         const controller = new Controller();
@@ -145,7 +159,7 @@ var Main = {
             this.updateEnemy(time);
             // 碰撞检测
             this.bulletEnemyCollide();
-             // 绘制战机
+            // 绘制战机
             this.plane.drawPlane()
             // 绘制子弹
             this.updateBulletsByList('bullets')
