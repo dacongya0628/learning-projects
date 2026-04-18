@@ -11,33 +11,18 @@
 
 <body>
     <div id="canvasBox" tabindex="-1">
+        <div class="startBtn" onclick="Main.gameStar()">开始游戏</div>
         <canvas id="canvas"></canvas>
-        <div class="startBtn" onclick="Main.start()">开始游戏</div>
-        <div class="cover"></div>
-        <div class="killBox">摧毁敌机：<span class="killNum">0</span></div>
-        <div class="escapeBox">逃跑敌机：<span class="escapeNum">0</span></div>
-        <div class="overBox">
-            <div class="title">游戏结束</div>
-            <div class="content"><span class="overTxt"></span><span class="gameOver">游戏结束!!!</span></div>
-            <div class="again" onclick="Main.toAgain()">再来一次</div>
-        </div>
-        <div class="btmBox" onclick="jumpUrl()">
-            <span class="dev">开发者：行走的大葱鸭</span>
-            <span class="leve">版本号：0.0.1</span>
-        </div>
     </div>
 
-    <script>
-    </script>
+    <script src="./js/Common.js"></script>
+    <script src="./js/Controller.js"></script>
+    <script src="./js/Timer.js"></script>
+    <script src="./js/Explosion.js"></script>
+    <script src="./js/Bullet.js"></script>
+    <script src="./js/Enemy.js"></script>
+    <script src="./js/Plane.js"></script>
+    <script src="./js/Main.js"></script>
 </body>
-<script src="./js/common.js"></script>
-<script src="./js/fire.js"></script>
-<script src="./js/enemy.js"></script>
-<script src="./js/plane.js"></script>
-<script src="./js/main.js"></script>
-<script>
-    function jumpUrl(){
-        location.href = "https://www.dacongyaa.com/"
-    }
-</script>
+
 </html>
