@@ -12,13 +12,12 @@ var Main = {
     lastEnemyTime: 0, // 上一次生成时间
     enemyBullets: [], // 敌机子弹
     explosions: [], // 爆炸的数组
+    killCount: 0, //击杀数量
     init() {
         this.canvasEl = Common.$("#canvas")
         this.ctx = this.canvasEl.getContext("2d");
         this.resizeCanvas();
         this.initImages();
-
-
         this.canvasEl.addEventListener('touchmove', (ev) => {
             this.touchmove(ev)
         })
@@ -55,7 +54,7 @@ var Main = {
     // 初始化战机
     initPlane() {
         this.plane = new Plane(this.imgs[0], this.imgs[2], this.viewportWidth, this.viewportHeight, this.ctx,);
-        this.plane.drawPlane();
+        this.plane.draw();
     },
     // 更新战机子弹
     updatePlaneBullets(controller, time) {
@@ -102,6 +101,7 @@ var Main = {
     updateExplosions() {
         this.explosions = this.explosions.filter(e => !e.isDone);
         this.explosions.forEach(e => {
+            this.killCount += 1;
             e.update();
             e.draw();
         });
@@ -134,6 +134,19 @@ var Main = {
             })
         })
     },
+    // 敌机子弹和战机的碰撞
+    enemyBulletsPlaneCollide() {
+        let hit = false
+        for (let i = this.enemyBullets.length - 1; i >= 0; i--) {
+            const bullet = this.enemyBullets[i]
+            if (!hit && this.isCollide(this.plane.getRect(), bullet.getRect())) {
+                this.plane.loseHp()
+                // 删除子弹
+                this.enemyBullets.splice(i, 1)
+                hit = true
+            }
+        }
+    },
     // H5端手指触控
     touchmove(ev) {
         const touch = ev.touches[0]
@@ -153,16 +166,16 @@ var Main = {
         const timer = new Timer();
         timer.add((time) => {
             this.clearRect()
-
             this.updatePlaneBullets(controller, time);
             this.autoAddEnemy(time);
             this.updateEnemy(time);
             // 碰撞检测
             this.bulletEnemyCollide();
+            this.enemyBulletsPlaneCollide();
             // 绘制战机
-            this.plane.drawPlane()
+            this.plane.draw()
             // 绘制子弹
-            this.updateBulletsByList('bullets')
+            // this.updateBulletsByList('bullets')
             this.updateBulletsByList('enemyBullets')
             // 爆炸
             this.updateExplosions()

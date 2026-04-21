@@ -14,22 +14,25 @@ class Plane {
         // canvas上下文对象
         this.ctx = ctx;
         // 战机移动速度
-        this.speed = 3;
+        this.speed = 5;
         // 子弹间隔时间
         this.shootInterval = 300;
         // 上一次发射时间
         this.lastShootTime = 0
+        // 血条
+        this.hp = new HpBar(100);
     }
 
     // 战机在画布上的信息
-    planeFrame() {
+    frame() {
         var frame = new Frame(0, 0, 97, 97, this.x, this.y, 30, 30);
         return frame;
     }
     // 绘制战机
-    drawPlane() {
-        const { sx, sy, sw, sh, dx, dy, dw, dh } = this.planeFrame()
+    draw() {
+        const { sx, sy, sw, sh, dx, dy, dw, dh } = this.frame()
         this.ctx.drawImage(this.img, sx, sy, sw, sh, dx, dy, dw, dh);
+        this.hp.draw(this.ctx, 20, 20, 50, 10);
     }
     /**
      * 战机位置更新
@@ -37,6 +40,7 @@ class Plane {
     * 应该在 requestAnimationFrame 循环中持续调用
     */
     update(controller, time) {
+        this.hp.update();
         let dx = 0; // x 方向位移
         let dy = 0; // y 方向位移
         // 根据按键状态计算方向
@@ -63,7 +67,7 @@ class Plane {
 
         if (time - this.lastShootTime > this.shootInterval) {
             this.lastShootTime = time;
-            return this.shoot();
+            return this.addBullets();
         }
         return null
     }
@@ -72,10 +76,22 @@ class Plane {
         this.x = x - 15;
         this.y = y - 15;
     }
-    // 射击
-    shoot() {
+    // 获取坐标以及大小信息 - 用于碰撞检测
+    getRect() {
+        return {
+            x: this.x,
+            y: this.y,
+            width: 30,
+            height: 30
+        }
+    }
+    // 填充子弹
+    addBullets() {
         const bullet = new Bullet(this.bulletImg, this.x, this.y, -10, this.viewportWidth, this.viewportHeight, this.ctx)
         return bullet;
     }
-
+    // 扣血
+    loseHp(value = 10) {
+        this.hp.damage(value)
+    }
 }
