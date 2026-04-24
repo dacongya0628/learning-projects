@@ -1,35 +1,193 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html,
 body {
   overflow: hidden;
+  width: 100%;
+  height: 100%;
+  font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #canvasBox {
-  background-attachment: fixed;
+  position: relative;
   height: 100vh;
   width: 100vw;
   background-image: url("../images/bg.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 50% 0;
+  overflow: hidden;
 }
-#canvas{
+
+/* 背景遮罩 - 让游戏内容更清晰 */
+#canvasBox::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#canvas {
+  position: relative;
+  z-index: 2;
   height: 100vh;
   width: 100vw;
+  display: block;
+}
+
+/* ===== 首页 UI 容器 ===== */
+.home-ui {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.home-ui > * {
+  pointer-events: auto;
+}
+
+/* ===== 开始按钮 ===== */
+.startBtn {
+  padding: 14px 44px;
+  font-size: 18px;
+  min-width: 150px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 4px;
+  
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  
+  box-shadow:
+    0 8px 32px rgba(238, 90, 36, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  
+  transition: all 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.startBtn:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 12px 40px rgba(238, 90, 36, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #ff7b7b, #ee5a24);
+}
+
+.startBtn:active {
+  transform: scale(0.97);
+}
+
+/* 按钮呼吸光效动画 */
+@keyframes btnPulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 32px rgba(238, 90, 36, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 8px 48px rgba(238, 90, 36, 0.7),
+      0 0 80px rgba(238, 90, 36, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
 }
 
 .startBtn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: calc((20 / 4.14) * 1vw);
-  z-index: 9;
+  animation: btnPulse 2s ease-in-out infinite;
+}
+
+/* ===== 游戏标题 ===== */
+.game-title {
+  margin-bottom: 30px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.game-title .main {
+  display: block;
+  font-size: 42px;
+  font-weight: 900;
   color: #fff;
-  font-weight: bolder;
-  background-color: transparent;
+  letter-spacing: 8px;
+  text-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(255, 107, 107, 0.3);
+}
+
+.game-title .sub {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== 操作提示 ===== */
+.game-hint {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.game-hint span {
+  display: inline-block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: hintFade 2s ease-in-out infinite;
+}
+
+@keyframes hintFade {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ===== 响应式适配 ===== */
+@media (max-width: 480px) {
+  .game-title .main {
+    font-size: 32px;
+    letter-spacing: 6px;
+  }
+  
+  .game-title .sub {
+    font-size: 14px;
+  }
+  
+  .startBtn {
+    padding: 12px 36px;
+    font-size: 16px;
+    min-width: 130px;
+  }
+  
+  .game-hint span {
+    font-size: 12px;
+    padding: 5px 14px;
+  }
 }

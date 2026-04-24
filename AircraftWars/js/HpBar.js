@@ -11,9 +11,13 @@ class HpBar {
         /** 显示血量（用于动画） */
         this.displayValue = max
         /** 动画平滑系数（越大越快） */
-        this.smooth = 0.1
+        this.smooth = 0.08
         /** 受击闪烁计时 */
         this.hitTimer = 0
+        /** 受击红色覆盖层计时 */
+        this.hitOverlayTimer = 0
+        /** 受击抖动偏移量 */
+        this.shakeOffset = 0
     }
     /**
      * 设置血量（带边界限制）
@@ -26,7 +30,9 @@ class HpBar {
      */
     damage(amount) {
         this.set(this.value - amount)
-        this.hitTimer = 6 // 触发闪烁
+        this.hitTimer = 8 // 闪烁持续帧数
+        this.hitOverlayTimer = 4 // 红色覆盖层持续帧数
+        this.shakeOffset = 3 // 抖动幅度
     }
     /**
      * 加血
@@ -38,9 +44,8 @@ class HpBar {
      * 每帧更新（做动画）
      */
     update() {
-        // 缓动动画（关键）
+        // 缓动动画
         this.displayValue += (this.value - this.displayValue) * this.smooth
-        // 防止无限逼近
         if (Math.abs(this.displayValue - this.value) < 0.1) {
             this.displayValue = this.value
         }
@@ -48,16 +53,38 @@ class HpBar {
         if (this.hitTimer > 0) {
             this.hitTimer--
         }
+        // 更新红色覆盖层
+        if (this.hitOverlayTimer > 0) {
+            this.hitOverlayTimer--
+        }
+        // 抖动衰减
+        if (this.shakeOffset > 0) {
+            this.shakeOffset *= 0.7
+            if (this.shakeOffset < 0.3) this.shakeOffset = 0
+        }
     }
     /**
-     * 根据血量返回颜色
+     * 根据血量返回渐变色
      */
-    getColor() {
+    getGradient(ctx, x, y, width, height) {
         const percent = this.value / this.max
+        let color1, color2
 
-        if (percent > 0.5) return '#00ff88'
-        if (percent > 0.2) return '#ff9900'
-        return '#ff3333'
+        if (percent > 0.6) {
+            color1 = '#00e676'
+            color2 = '#00c853'
+        } else if (percent > 0.3) {
+            color1 = '#ff9100'
+            color2 = '#ff6d00'
+        } else {
+            color1 = '#ff1744'
+            color2 = '#d50000'
+        }
+
+        const grad = ctx.createLinearGradient(x, y, x, y + height)
+        grad.addColorStop(0, color1)
+        grad.addColorStop(1, color2)
+        return grad
     }
     /**
      * 绘制圆角矩形路径
@@ -87,35 +114,105 @@ class HpBar {
      */
     draw(ctx, x, y, width, height) {
         const radius = height / 2
-        // ===== 受击闪烁（整体透明度变化）=====
-        if (this.hitTimer > 0) {
+        const barWidth = width
+        const barHeight = height
+
+        // ===== 受击抖动 =====
+        const shakeX = this.shakeOffset > 0 ? (Math.random() - 0.5) * this.shakeOffset * 2 : 0
+        const drawX = x + shakeX
+
+        // ===== 受击闪烁 =====
+        const isFlashing = this.hitTimer > 0 && this.hitTimer % 2 === 0
+
+        if (isFlashing) {
             ctx.save()
-            ctx.globalAlpha = 0.7
+            ctx.globalAlpha = 0.6
         }
+
         // ===== 1. 背景 =====
-        this.drawRoundRect(ctx, x, y, width, height, radius)
-        ctx.fillStyle = '#222'
+        ctx.save()
+        this.drawRoundRect(ctx, drawX, y, barWidth, barHeight, radius)
+        ctx.fillStyle = '#1a1a2e'
         ctx.fill()
+
+        // 背景内阴影效果
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)'
+        ctx.shadowBlur = 4
+        ctx.shadowOffsetX = 0
+        ctx.shadowOffsetY = 2
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+        ctx.lineWidth = 1
+        this.drawRoundRect(ctx, drawX, y, barWidth, barHeight, radius)
+        ctx.stroke()
+        ctx.restore()
+
         // ===== 2. 裁剪（保证内部不会溢出圆角）=====
         ctx.save()
-        this.drawRoundRect(ctx, x, y, width, height, radius)
+        this.drawRoundRect(ctx, drawX, y, barWidth, barHeight, radius)
         ctx.clip()
-        // ===== 3. 延迟血条（黄色拖尾）=====
-        ctx.fillStyle = '#ffaa00'
-        ctx.fillRect(x, y, (this.displayValue / this.max) * width, height)
-        // ===== 4. 实时血条 =====
-        ctx.fillStyle = this.getColor()
-        ctx.fillRect(x, y, (this.value / this.max) * width, height)
-        ctx.restore()
-        // ===== 5. 描边 =====
-        ctx.lineWidth = 2
-        ctx.strokeStyle = '#ffffff'
-        this.drawRoundRect(ctx, x, y, width, height, radius)
-        ctx.stroke()
-        // ===== 恢复透明度 =====
-        if (this.hitTimer > 0) {
+
+        // ===== 3. 延迟血条（橙色拖尾）=====
+        const delayWidth = (this.displayValue / this.max) * barWidth
+        if (delayWidth > 0) {
+            ctx.fillStyle = 'rgba(255, 150, 0, 0.35)'
+            ctx.fillRect(drawX, y, delayWidth, barHeight)
+        }
+
+        // ===== 4. 实时血条（渐变）=====
+        const currentWidth = (this.value / this.max) * barWidth
+        if (currentWidth > 0) {
+            const grad = this.getGradient(ctx, drawX, y, currentWidth, barHeight)
+            ctx.fillStyle = grad
+            ctx.fillRect(drawX, y, currentWidth, barHeight)
+
+            // ===== 4a. 高光效果 =====
+            ctx.save()
+            ctx.globalAlpha = 0.3
+            const hlGrad = ctx.createLinearGradient(drawX, y, drawX, y + barHeight)
+            hlGrad.addColorStop(0, 'rgba(255, 255, 255, 0.6)')
+            hlGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.1)')
+            hlGrad.addColorStop(1, 'rgba(255, 255, 255, 0)')
+            ctx.fillStyle = hlGrad
+            ctx.fillRect(drawX, y, currentWidth, barHeight)
             ctx.restore()
         }
+
+        // ===== 5. 受击红色覆盖层 =====
+        if (this.hitOverlayTimer > 0) {
+            ctx.save()
+            ctx.globalAlpha = this.hitOverlayTimer / 4 * 0.4
+            ctx.fillStyle = '#ff0000'
+            ctx.fillRect(drawX, y, barWidth, barHeight)
+            ctx.restore()
+        }
+
+        ctx.restore() // 恢复裁剪
+
+        // ===== 6. 描边 =====
+        ctx.save()
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.1)'
+        ctx.shadowBlur = 6
+        ctx.lineWidth = 1.5
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)'
+        this.drawRoundRect(ctx, drawX, y, barWidth, barHeight, radius)
+        ctx.stroke()
+        ctx.restore()
+
+        // ===== 恢复闪烁透明度 =====
+        if (isFlashing) {
+            ctx.restore()
+        }
+
+        // ===== 7. 血量数字 =====
+        ctx.save()
+        ctx.fillStyle = '#fff'
+        ctx.font = 'bold 11px Arial, "Microsoft YaHei", sans-serif'
+        ctx.textBaseline = 'middle'
+        ctx.textAlign = 'center'
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.6)'
+        ctx.shadowBlur = 3
+        ctx.fillText(`${Math.ceil(this.value)} / ${this.max}`, drawX + barWidth / 2, y + barHeight / 2 + 0.5)
+        ctx.restore()
     }
     /**
      * 是否死亡

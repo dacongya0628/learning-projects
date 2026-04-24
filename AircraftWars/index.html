@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>飞机大战小游戏</title>
+    <title>🛩️ 飞机大战</title>
     <link rel="shortcut icon" href="images/icon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/index.css" />
 </head>
 
 <body>
     <div id="canvasBox" tabindex="-1">
-        <div class="startBtn" onclick="Main.gameStar()">开始游戏</div>
+        <!-- 首页 UI（游戏开始后统一隐藏） -->
+        <div class="home-ui">
+            <!-- 游戏标题 -->
+            <div class="game-title">
+                <span class="main">✈ 飞机大战</span>
+                <span class="sub">🛡️ 消灭所有入侵者</span>
+            </div>
+
+            <!-- 开始按钮 -->
+            <div class="startBtn" onclick="Main.gameStar()">开始游戏</div>
+        </div>
+
+        <!-- 操作提示 -->
+        <div class="game-hint"><span>⌨ 方向键移动 &nbsp;·&nbsp; 📱 触摸拖动</span></div>
+
         <canvas id="canvas"></canvas>
     </div>
 
@@ -20,7 +34,7 @@
     <script src="./js/Timer.js"></script>
     <script src="./js/Explosion.js"></script>
     <script src="./js/Bullet.js"></script>
-    <script src="./js/HpBar.js"></script>r
+    <script src="./js/HpBar.js"></script>
     <script src="./js/Enemy.js"></script>
     <script src="./js/Plane.js"></script>
     <script src="./js/Main.js"></script>

@@ -32,7 +32,23 @@ class Plane {
     draw() {
         const { sx, sy, sw, sh, dx, dy, dw, dh } = this.frame()
         this.ctx.drawImage(this.img, sx, sy, sw, sh, dx, dy, dw, dh);
-        this.hp.draw(this.ctx, 20, 20, 50, 10);
+        // 绘制血条 - 左侧
+        const barWidth = Math.min(160, this.viewportWidth * 0.35);
+        const barHeight = 18;
+        const barX = 16;
+        const barY = 14;
+        // HP 标签（血条左侧）
+        this.ctx.save();
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        this.ctx.font = 'bold 12px Arial, "Microsoft YaHei", sans-serif';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.textAlign = 'left';
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        this.ctx.shadowBlur = 3;
+        this.ctx.fillText('HP', barX, barY + barHeight / 2);
+        this.ctx.restore();
+        // 绘制血条（HP 标签右侧）
+        this.hp.draw(this.ctx, barX + 30, barY, barWidth, barHeight);
     }
     /**
      * 战机位置更新

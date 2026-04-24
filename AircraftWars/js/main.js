@@ -101,10 +101,67 @@ var Main = {
     updateExplosions() {
         this.explosions = this.explosions.filter(e => !e.isDone);
         this.explosions.forEach(e => {
-            this.killCount += 1;
             e.update();
             e.draw();
         });
+    },
+    // 更新击杀数量
+    drawScore(ctx) {
+        const ctx2 = this.ctx;
+        const padding = 10;
+        const fontSize = 13;
+        const text = `💥 击杀 ${this.killCount}`;
+        ctx2.font = `bold ${fontSize}px Arial, "Microsoft YaHei", sans-serif`;
+        const textWidth = ctx2.measureText(text).width;
+        const boxWidth = textWidth + padding * 2;
+        const boxHeight = 18;
+        const boxX = this.viewportWidth - boxWidth - 16;
+        const boxY = 14;
+
+        // 半透明背景
+        ctx2.save();
+        ctx2.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx2.shadowBlur = 8;
+        ctx2.shadowOffsetY = 2;
+        ctx2.fillStyle = 'rgba(0, 0, 0, 0.45)';
+        this.drawRoundRect(ctx2, boxX, boxY, boxWidth, boxHeight, 9);
+        ctx2.fill();
+        ctx2.restore();
+
+        // 边框光效
+        ctx2.save();
+        ctx2.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx2.lineWidth = 1;
+        this.drawRoundRect(ctx2, boxX, boxY, boxWidth, boxHeight, 9);
+        ctx2.stroke();
+        ctx2.restore();
+
+        // 文字
+        ctx2.save();
+        ctx2.fillStyle = '#fff';
+        ctx2.font = `bold ${fontSize}px Arial, "Microsoft YaHei", sans-serif`;
+        ctx2.textBaseline = 'middle';
+        ctx2.textAlign = 'left';
+        ctx2.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx2.shadowBlur = 3;
+        ctx2.fillText(text, boxX + padding, boxY + boxHeight / 2);
+        ctx2.restore();
+    },
+
+    // 绘制圆角矩形路径（Canvas 工具方法）
+    drawRoundRect(ctx, x, y, w, h, r) {
+        r = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
     },
     // 碰撞检测方法
     isCollide(r1, r2) {
@@ -122,6 +179,7 @@ var Main = {
                 if (this.isCollide(bullet.getRect(), enemy.getRect())) {
                     bullet.isDel = true;
                     enemy.isDead = true;
+                    this.killCount += 1;
                     this.explosions.push(
                         new Explosion(
                             this.imgs[4], // 你的爆炸图
@@ -150,18 +208,20 @@ var Main = {
     // H5端手指触控
     touchmove(ev) {
         const touch = ev.touches[0]
-
         const x = touch.clientX
         const y = touch.clientY
-
-        console.log(x, y)
         this.plane.updateByTouchMove(x, y)
     },
     // 开始游戏
     gameStar() {
         const controller = new Controller();
         controller.initEvents()
-        Common.$(".startBtn")[0].style.display = "none";
+        // 隐藏首页 UI（标题 + 按钮）
+        const homeUi = document.querySelector('.home-ui');
+        if (homeUi) homeUi.style.display = 'none';
+        // 隐藏操作提示
+        const gameHint = document.querySelector('.game-hint');
+        if (gameHint) gameHint.style.display = 'none';
         this.initPlane()
         const timer = new Timer();
         timer.add((time) => {
@@ -175,10 +235,11 @@ var Main = {
             // 绘制战机
             this.plane.draw()
             // 绘制子弹
-            // this.updateBulletsByList('bullets')
+            this.updateBulletsByList('bullets')
             this.updateBulletsByList('enemyBullets')
             // 爆炸
             this.updateExplosions()
+            this.drawScore();
         })
 
         timer.start()
