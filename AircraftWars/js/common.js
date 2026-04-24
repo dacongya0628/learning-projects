@@ -1,10 +1,10 @@
 // 立即执行函数-为全局提供便捷的方法
 var Common = function () {
     // 提供便捷的元素选择
+    // 支持 #id、.class、tag 三种选择方式
     function $(attr) {
         let prefix = attr.charAt(0);
         let value = attr.slice(1);
-        console.log(prefix, value);
 
         switch (prefix) {
             case '#':
@@ -36,11 +36,12 @@ var Common = function () {
                 }
             });
             return {
-                imgs: imgs.filter(Boolean),
+                imgs: imgs.filter(Boolean), // 过滤掉加载失败的空位
                 errors
             };
         })
     }
+    // 异步初始化图片，加载完成后回调
     async function initImgs(urls, cb) {
         const { imgs } = await preloadImages(urls);
         cb && cb(imgs);
@@ -53,6 +54,7 @@ var Common = function () {
 }()
 
 // 提供全局的图片动画帧
+// 参数：sx/sy 源图裁剪起点，sw/sh 裁剪宽高，dx/dy 目标位置，dw/dh 目标尺寸
 var Frame = function (sx,sy,sw,sh,dx,dy,dw,dh) {
     this.sx = sx;
     this.sy = sy;

@@ -4,7 +4,7 @@ class Enemy {
         // 窗口大小
         this.viewportHeight = viewportHeight;
         this.viewportWidth = viewportWidth;
-        // 显示的坐标
+        // 显示的坐标（随机水平位置，从屏幕外顶部进入）
         this.x = Math.random() * (viewportWidth - 30);
         this.y = -301;
         // 敌机对应的图片对象
@@ -15,7 +15,7 @@ class Enemy {
         this.ctx = ctx;
         // 敌机移动速度
         this.speed = 3;
-        // 子弹间隔时间
+        // 子弹发射间隔时间（毫秒）
         this.shootInterval = 1000;
         // 上一次发射时间
         this.lastShootTime = 0
@@ -39,11 +39,14 @@ class Enemy {
     * 应该在 requestAnimationFrame 循环中持续调用
     */
     update(time) {
+        // 向下移动
         this.y += this.speed;
+        // 超出底部则标记死亡
         if (this.y + 30 > this.viewportHeight) {
             this.isDead = true;
         }
 
+        // 按间隔射击
         if (time - this.lastShootTime > this.shootInterval) {
             this.lastShootTime = time;
             return this.shoot();

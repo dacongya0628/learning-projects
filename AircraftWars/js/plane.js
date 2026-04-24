@@ -15,12 +15,16 @@ class Plane {
         this.ctx = ctx;
         // 战机移动速度
         this.speed = 5;
-        // 子弹间隔时间
+        // 子弹发射间隔时间（毫秒）
         this.shootInterval = 300;
         // 上一次发射时间
         this.lastShootTime = 0
         // 血条
         this.hp = new HpBar(100);
+        // ===== 无敌状态 =====
+        this.invincible = false;       // 是否无敌
+        this.invincibleDuration = 3000; // 无敌持续时间（毫秒）
+        this.invincibleStartTime = 0;   // 无敌开始时间
     }
 
     // 战机在画布上的信息
@@ -30,8 +34,24 @@ class Plane {
     }
     // 绘制战机
     draw() {
+        // ===== 无敌闪烁：透明度交替变化 =====
+        if (this.invincible) {
+            // 每 100ms 切换一次显隐（闪烁效果）
+            const elapsed = performance.now() - this.invincibleStartTime;
+            const visible = Math.floor(elapsed / 100) % 2 === 0;
+            if (!visible) {
+                this.ctx.globalAlpha = 0.2;
+            }
+        }
+
         const { sx, sy, sw, sh, dx, dy, dw, dh } = this.frame()
         this.ctx.drawImage(this.img, sx, sy, sw, sh, dx, dy, dw, dh);
+
+        // 恢复透明度
+        if (this.invincible) {
+            this.ctx.globalAlpha = 1.0;
+        }
+
         // 绘制血条 - 左侧
         const barWidth = Math.min(160, this.viewportWidth * 0.35);
         const barHeight = 18;
@@ -39,7 +59,7 @@ class Plane {
         const barY = 14;
         // HP 标签（血条左侧）
         this.ctx.save();
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)';
         this.ctx.font = 'bold 12px Arial, "Microsoft YaHei", sans-serif';
         this.ctx.textBaseline = 'middle';
         this.ctx.textAlign = 'left';
@@ -55,8 +75,21 @@ class Plane {
     * 每一帧更新位置（核心逻辑）
     * 应该在 requestAnimationFrame 循环中持续调用
     */
-    update(controller, time) {
+    /**
+     * 战机位置更新
+     * @param {Controller} controller - 控制器实例
+     * @param {number} time - 当前时间戳
+     * @param {number} killCount - 当前击杀数（用于动态调整射速）
+     */
+    update(controller, time, killCount = 0) {
         this.hp.update();
+        // ===== 更新无敌状态 =====
+        if (this.invincible) {
+            if (time - this.invincibleStartTime >= this.invincibleDuration) {
+                this.invincible = false; // 3 秒后解除无敌
+            }
+        }
+
         let dx = 0; // x 方向位移
         let dy = 0; // y 方向位移
         // 根据按键状态计算方向
@@ -77,17 +110,22 @@ class Plane {
         this.x += dx * this.speed;
         this.y += dy * this.speed;
 
-        // 边界限制（Clamp，防止飞出屏幕）注意：必须减去自身宽高，否则会“露一半”
+        // 边界限制（Clamp，防止飞出屏幕）注意：必须减去自身宽高，否则会"露一半"
         this.x = Math.max(0, Math.min(this.x, this.viewportWidth - 30));
         this.y = Math.max(0, Math.min(this.y, this.viewportHeight - 30));
 
-        if (time - this.lastShootTime > this.shootInterval) {
+        // 根据击杀数动态计算射击间隔（每击杀 100 架，间隔减少 20ms，最低 100ms）
+        const difficultyLevel = Math.floor(killCount / 100);
+        const dynamicInterval = Math.max(100, this.shootInterval - difficultyLevel * 20);
+
+        // 自动射击
+        if (time - this.lastShootTime > dynamicInterval) {
             this.lastShootTime = time;
             return this.addBullets();
         }
         return null
     }
-    // 跟随手指移动
+    // 跟随手指移动（移动端）
     updateByTouchMove(x, y) {
         this.x = x - 15;
         this.y = y - 15;
@@ -101,13 +139,17 @@ class Plane {
             height: 30
         }
     }
-    // 填充子弹
+    // 生成子弹
     addBullets() {
         const bullet = new Bullet(this.bulletImg, this.x, this.y, -10, this.viewportWidth, this.viewportHeight, this.ctx)
         return bullet;
     }
-    // 扣血
+    // 扣血（触发无敌）
     loseHp(value = 10) {
+        if (this.invincible) return; // 无敌期间不扣血
         this.hp.damage(value)
+        // 触发无敌
+        this.invincible = true;
+        this.invincibleStartTime = performance.now(); // 用 performance.now() 与 rAF 时间戳一致
     }
 }

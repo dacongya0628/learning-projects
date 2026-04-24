@@ -8,7 +8,7 @@
 - 通过多个小项目拆开练习不同方向的前端能力，而不是把所有内容混在一个大工程里
 - 同时覆盖界面效果、动画实现、小游戏机制和构建工具思路
 - 让每个子项目都能作为相对完整的学习样本单独阅读、运行和扩展
-- 保留从“基础实现”到“结构拆分”的练习过程，方便后续回顾和迭代
+- 保留从"基础实现"到"结构拆分"的练习过程，方便后续回顾和迭代
 
 ## 🚀 快速开始
 
@@ -48,7 +48,7 @@ learning-projects/
 
 | 项目 | 主题 | 主要技术 | 查看方式 | 当前实现范围 |
 |------|------|------|------|------|
-| [AircraftWars](./AircraftWars/README.md) | 纵向射击小游戏 | HTML、CSS、原生 JavaScript、Canvas | 打开 `AircraftWars/index.html` | 已实现画布适配、玩家移动、自动开火、敌机生成、敌机子弹、碰撞爆炸等基础机制 |
+| [AircraftWars](./AircraftWars/README.md) | 纵向射击小游戏 | HTML、CSS、原生 JavaScript、Canvas | 打开 `AircraftWars/index.html` | 已实现画布适配、玩家移动、自动开火、敌机生成、敌机子弹、碰撞爆炸、玩家受击与无敌、血条系统、动态难度、游戏结束弹窗、首页 UI |
 | [DynamicParticlePanel](./DynamicParticlePanel/README.md) | 粒子连线动态背景 | HTML、CSS、原生 JavaScript、Canvas | 打开 `DynamicParticlePanel/index.html` | 已实现全屏粒子系统、距离连线、DPR 适配、窗口 resize 与网格分区优化 |
 | [TailwindCss](./TailwindCss/README.md) | 简化版原子化 CSS 构建工具 | Node.js、ES Modules | 执行 `node src/build.js` 后查看 `demo/index.html` | 已实现类名扫描、CSS 规则生成、伪类/响应式变体和演示页面 |
 
@@ -85,7 +85,7 @@ learning-projects/
 - 可以通过一组体量较小的项目并行练习不同方向的工程基础
 - 原生前端技术足够支撑很多教学型项目，包括动画、小游戏和工具雏形
 - 把项目拆成独立目录后，更容易对比不同实现方式和不同技术主题
-- 根目录总览文档能帮助后续维护时快速判断“仓库里现在到底有什么”
+- 根目录总览文档能帮助后续维护时快速判断"仓库里现在到底有什么"
 
 ## 🤝 贡献指南
 

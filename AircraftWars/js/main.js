@@ -1,3 +1,5 @@
+// 游戏主控模块（单例对象）
+// 职责：初始化画布、加载资源、启动游戏循环、碰撞调度
 var Main = {
     canvasEl: null, // canvas 元素
     ctx: null, // 2D 绘图上下文
@@ -6,18 +8,24 @@ var Main = {
     dpr: 1, // 当前设备像素比
     imgs: [], // 游戏所需要的图片数据
     plane: null, // 游戏中的飞机实例
-    bullets: [], // 子弹
-    enemys: [], // 敌机
-    enemyInterval: 300, // 敌机间隔时间
-    lastEnemyTime: 0, // 上一次生成时间
-    enemyBullets: [], // 敌机子弹
-    explosions: [], // 爆炸的数组
-    killCount: 0, //击杀数量
+    bullets: [], // 玩家子弹列表
+    enemys: [], // 敌机列表
+    enemyInterval: 300, // 敌机生成间隔时间（毫秒）
+    lastEnemyTime: 0, // 上一次生成敌机的时间
+    enemyBullets: [], // 敌机子弹列表
+    explosions: [], // 爆炸特效列表
+    killCount: 0, // 击杀敌机数量
+    timer: null, // 游戏循环定时器（Timer 实例）
+    isGameOver: false, // 游戏是否结束
     init() {
+        // 获取 canvas 元素和 2D 绘图上下文
         this.canvasEl = Common.$("#canvas")
         this.ctx = this.canvasEl.getContext("2d");
+        // 初始化画布尺寸
         this.resizeCanvas();
+        // 加载游戏图片资源
         this.initImages();
+        // 注册触摸移动事件（移动端控制）
         this.canvasEl.addEventListener('touchmove', (ev) => {
             this.touchmove(ev)
         })
@@ -30,8 +38,10 @@ var Main = {
         this.viewportWidth = displayWidth;
         this.viewportHeight = displayHeight;
         this.dpr = dpr;
+        // 物理像素 = CSS 像素 × DPR
         this.canvasEl.width = Math.round(displayWidth * dpr);
         this.canvasEl.height = Math.round(displayHeight * dpr);
+        // 统一缩放，后续绘制代码无需关心 DPR
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         return {
             width: displayWidth,
@@ -58,22 +68,30 @@ var Main = {
     },
     // 更新战机子弹
     updatePlaneBullets(controller, time) {
-        const bullet = this.plane.update(controller, time)
+        const bullet = this.plane.update(controller, time, this.killCount)
         if (bullet) {
             this.bullets.push(bullet);
         }
     },
-    // 初始化敌机
+    // 自动生成敌机（按随机间隔，随击杀数动态加速）
     autoAddEnemy(time) {
         if (time - this.lastEnemyTime > this.enemyInterval) {
             const enemy = new Enemy(this.imgs[1], this.imgs[3], this.viewportWidth, this.viewportHeight, this.ctx);
             this.enemys.push(enemy)
-            this.enemyInterval = 200 + Math.random() * 800;
+            // 根据击杀数计算难度系数（每击杀 100 架提升一个难度等级）
+            // 难度等级越高，敌机生成越快
+            const difficultyLevel = Math.floor(this.killCount / 100);
+            // 基础间隔范围：200ms ~ 1000ms
+            // 每升一级，下限减 30ms，上限减 80ms（但下限不低于 50ms）
+            const minInterval = Math.max(50, 200 - difficultyLevel * 30);
+            const maxInterval = Math.max(minInterval + 100, 1000 - difficultyLevel * 80);
+            this.enemyInterval = minInterval + Math.random() * (maxInterval - minInterval);
             this.lastEnemyTime = time;
         }
     },
-    // 敌机出动
+    // 更新所有敌机（移动、射击、绘制）
     updateEnemy(time) {
+        // 过滤已死亡的敌机
         this.enemys = this.enemys.filter(e => !e.isDead);
         this.enemys.forEach(item => {
             const bullet = item.update(time)
@@ -83,8 +101,9 @@ var Main = {
             item.draw();
         })
     },
-    // 子弹发射(更新子弹轨迹)
+    // 更新子弹列表（移动 + 绘制 + 边界过滤）
     updateBulletsByList(list) {
+        // 过滤已删除或超出边界的子弹
         this[list] = this[list].filter(b => {
             if (b.isDel) return false;
             if (b.y < -50 || b.y > this.viewportHeight + 50) {
@@ -97,15 +116,16 @@ var Main = {
             item.draw();
         })
     },
-    // 更新爆炸
+    // 更新爆炸特效
     updateExplosions() {
+        // 过滤已完成的爆炸
         this.explosions = this.explosions.filter(e => !e.isDone);
         this.explosions.forEach(e => {
             e.update();
             e.draw();
         });
     },
-    // 更新击杀数量
+    // 绘制击杀计数（右上角）
     drawScore(ctx) {
         const ctx2 = this.ctx;
         const padding = 10;
@@ -158,12 +178,12 @@ var Main = {
         ctx.lineTo(x + w, y + h - r);
         ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
         ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + r);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
         ctx.lineTo(x, y + r);
         ctx.quadraticCurveTo(x, y, x + r, y);
         ctx.closePath();
     },
-    // 碰撞检测方法
+    // 碰撞检测方法（AABB 矩形碰撞）
     isCollide(r1, r2) {
         return !(
             r1.x + r1.width < r2.x ||
@@ -180,9 +200,10 @@ var Main = {
                     bullet.isDel = true;
                     enemy.isDead = true;
                     this.killCount += 1;
+                    // 生成爆炸特效
                     this.explosions.push(
                         new Explosion(
-                            this.imgs[4], // 你的爆炸图
+                            this.imgs[4], // 爆炸贴图
                             enemy.x,
                             enemy.y + 15,
                             this.ctx
@@ -192,14 +213,14 @@ var Main = {
             })
         })
     },
-    // 敌机子弹和战机的碰撞
+    // 敌机子弹和战机的碰撞检测
     enemyBulletsPlaneCollide() {
         let hit = false
         for (let i = this.enemyBullets.length - 1; i >= 0; i--) {
             const bullet = this.enemyBullets[i]
             if (!hit && this.isCollide(this.plane.getRect(), bullet.getRect())) {
                 this.plane.loseHp()
-                // 删除子弹
+                // 删除已碰撞的子弹
                 this.enemyBullets.splice(i, 1)
                 hit = true
             }
@@ -214,6 +235,16 @@ var Main = {
     },
     // 开始游戏
     gameStar() {
+        // 重置游戏状态
+        this.isGameOver = false;
+        this.killCount = 0;
+        this.bullets = [];
+        this.enemys = [];
+        this.enemyBullets = [];
+        this.explosions = [];
+        this.lastEnemyTime = 0;
+        this.enemyInterval = 300;
+
         const controller = new Controller();
         controller.initEvents()
         // 隐藏首页 UI（标题 + 按钮）
@@ -222,9 +253,17 @@ var Main = {
         // 隐藏操作提示
         const gameHint = document.querySelector('.game-hint');
         if (gameHint) gameHint.style.display = 'none';
+        // 隐藏游戏结束弹窗
+        const overlay = document.getElementById('gameOverOverlay');
+        if (overlay) overlay.style.display = 'none';
+
         this.initPlane()
-        const timer = new Timer();
-        timer.add((time) => {
+        this.timer = new Timer();
+        // 注册游戏主循环（每一帧执行一次）
+        this.timer.add((time) => {
+            // 游戏结束则停止更新
+            if (this.isGameOver) return;
+
             this.clearRect()
             this.updatePlaneBullets(controller, time);
             this.autoAddEnemy(time);
@@ -240,11 +279,49 @@ var Main = {
             // 爆炸
             this.updateExplosions()
             this.drawScore();
+
+            // 检测游戏结束（HP 归零）
+            if (this.plane.hp.isDead()) {
+                this.isGameOver = true;
+                this.showGameOver();
+            }
         })
 
-        timer.start()
+        this.timer.start()
+    },
 
+    // 显示游戏结束弹窗
+    showGameOver() {
+        // 停止游戏循环
+        if (this.timer) {
+            this.timer.stop();
+        }
+        // 更新击杀数
+        const scoreEl = document.getElementById('finalKillCount');
+        if (scoreEl) scoreEl.textContent = this.killCount;
+        // 显示弹窗
+        const overlay = document.getElementById('gameOverOverlay');
+        if (overlay) overlay.style.display = 'flex';
+    },
 
+    // 重新开始游戏
+    restartGame() {
+        this.gameStar();
+    },
+
+    // 返回首页
+    exitToHome() {
+        // 隐藏弹窗
+        const overlay = document.getElementById('gameOverOverlay');
+        if (overlay) overlay.style.display = 'none';
+        // 显示首页 UI
+        const homeUi = document.querySelector('.home-ui');
+        if (homeUi) homeUi.style.display = 'flex';
+        // 显示操作提示
+        const gameHint = document.querySelector('.game-hint');
+        if (gameHint) gameHint.style.display = 'block';
+        // 清空画布
+        this.clearRect();
     }
 }
 

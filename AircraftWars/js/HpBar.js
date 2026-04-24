@@ -8,7 +8,7 @@ class HpBar {
         this.max = max
         /** 当前真实血量（逻辑值） */
         this.value = max
-        /** 显示血量（用于动画） */
+        /** 显示血量（用于缓动动画） */
         this.displayValue = max
         /** 动画平滑系数（越大越快） */
         this.smooth = 0.08
@@ -44,20 +44,21 @@ class HpBar {
      * 每帧更新（做动画）
      */
     update() {
-        // 缓动动画
+        // 缓动动画：displayValue 平滑逼近 value
         this.displayValue += (this.value - this.displayValue) * this.smooth
+        // 防止无限逼近
         if (Math.abs(this.displayValue - this.value) < 0.1) {
             this.displayValue = this.value
         }
-        // 更新闪烁
+        // 更新闪烁计时
         if (this.hitTimer > 0) {
             this.hitTimer--
         }
-        // 更新红色覆盖层
+        // 更新红色覆盖层计时
         if (this.hitOverlayTimer > 0) {
             this.hitOverlayTimer--
         }
-        // 抖动衰减
+        // 抖动衰减（指数衰减）
         if (this.shakeOffset > 0) {
             this.shakeOffset *= 0.7
             if (this.shakeOffset < 0.3) this.shakeOffset = 0
@@ -65,6 +66,7 @@ class HpBar {
     }
     /**
      * 根据血量返回渐变色
+     * @param {CanvasRenderingContext2D} ctx
      */
     getGradient(ctx, x, y, width, height) {
         const percent = this.value / this.max
