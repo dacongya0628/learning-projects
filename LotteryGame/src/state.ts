@@ -38,7 +38,9 @@ export type DrawPhase = 'idle' | 'drawing' | 'completed';
 export type ResultEntry = {
   /** 单条记录唯一 id，用于缺席补抽等操作 */
   id: string;
+  /** 所属等级 id */
   tierId: string;
+  /** 所属等级名称（展示用） */
   tierName: string;
   /** 当前有效号码（补抽后更新） */
   number: number;

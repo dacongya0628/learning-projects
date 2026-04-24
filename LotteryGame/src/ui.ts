@@ -16,9 +16,9 @@ export type Elements = {
   app: HTMLElement;
   /** main.app-main：含 phase-setup / phase-stage，控制两阶段布局 */
   appMain: HTMLElement;
-  /** 最小号码 */
+  /** 最小号码输入框 */
   formMin: HTMLInputElement;
-  /** 最大号码 */
+  /** 最大号码输入框 */
   formMax: HTMLInputElement;
   /** 统一揭晓方式：改动能同步到所有等级行；新增行也以此为初始值 */
   defaultDrawMode: HTMLSelectElement;
@@ -261,11 +261,13 @@ export function setPhase(els: Elements, phase: 'setup' | 'stage'): void {
   }
 }
 
+/** 从页面上的「统一揭晓方式」下拉读取当前值 */
 function readDefaultDrawModeFromDoc(list: HTMLElement): DrawMode {
   const sel = list.ownerDocument.getElementById('default-draw-mode') as HTMLSelectElement | null;
   return sel?.value === 'manual' ? 'manual' : 'auto';
 }
 
+/** 从页面上的「统一滚动停止」下拉读取当前值 */
 function readDefaultRollStopModeFromDoc(list: HTMLElement): RollStopMode {
   const sel = list.ownerDocument.getElementById('default-roll-stop-mode') as HTMLSelectElement | null;
   return sel?.value === 'manual' ? 'manual' : 'auto';
@@ -287,6 +289,7 @@ export function applyGlobalRollStopToAllTierRows(list: HTMLElement, mode: RollSt
   }
 }
 
+/** 从单行 li 元素读取等级配置；若名称或 count 无效返回 null */
 function tierFromRow(li: HTMLLIElement): PrizeTier | null {
   const name = (li.querySelector('.tier-name') as HTMLInputElement).value.trim();
   const count = Math.floor(Number((li.querySelector('.tier-count') as HTMLInputElement).value));
@@ -730,6 +733,7 @@ export function renderResults(
   container.innerHTML = parts.join('');
 }
 
+/** HTML 转义，防止用户输入的内容被解析为标签 */
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, '&amp;')

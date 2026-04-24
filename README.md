@@ -31,6 +31,7 @@
 
 - `AircraftWars`：直接在浏览器中打开 `AircraftWars/index.html`
 - `DynamicParticlePanel`：直接在浏览器中打开 `DynamicParticlePanel/index.html`
+- `LotteryGame`：在项目目录执行 `npm install && npm run dev`，或执行 `npm run build` 后双击 `dist/index.html`
 - `TailwindCss`：在项目目录执行 `node src/build.js`，再打开 `demo/index.html` 查看结果
 
 ## 📁 项目结构
@@ -39,6 +40,7 @@
 learning-projects/
 ├── AircraftWars/          # 原生 JavaScript + Canvas 飞机大战练习
 ├── DynamicParticlePanel/  # 全屏粒子连线动画练习
+├── LotteryGame/           # Vite + TypeScript 随机抽奖机
 ├── TailwindCss/           # 简化版 Tailwind CSS 构建工具练习
 ├── LICENSE                # 仓库统一 MIT 许可证
 └── README.md              # 仓库总览说明
@@ -50,6 +52,7 @@ learning-projects/
 |------|------|------|------|------|
 | [AircraftWars](./AircraftWars/README.md) | 纵向射击小游戏 | HTML、CSS、原生 JavaScript、Canvas | 打开 `AircraftWars/index.html` | 已实现画布适配、玩家移动、自动开火、敌机生成、敌机子弹、碰撞爆炸、玩家受击与无敌、血条系统、动态难度、游戏结束弹窗、首页 UI |
 | [DynamicParticlePanel](./DynamicParticlePanel/README.md) | 粒子连线动态背景 | HTML、CSS、原生 JavaScript、Canvas | 打开 `DynamicParticlePanel/index.html` | 已实现全屏粒子系统、距离连线、DPR 适配、窗口 resize 与网格分区优化 |
+| [LotteryGame](./LotteryGame/README.md) | 随机抽奖机 | Vite、TypeScript、HTML、CSS | 执行 `npm install && npm run dev` 或 `npm run build` 后打开 `dist/index.html` | 已实现自定义号码区间、多等级抽奖、不放回抽取、滚动揭晓动画、响应式布局 |
 | [TailwindCss](./TailwindCss/README.md) | 简化版原子化 CSS 构建工具 | Node.js、ES Modules | 执行 `node src/build.js` 后查看 `demo/index.html` | 已实现类名扫描、CSS 规则生成、伪类/响应式变体和演示页面 |
 
 ## 🧠 仓库说明
@@ -64,6 +67,7 @@ learning-projects/
 
 - 目前收录项目主要集中在前端学习方向
 - 其中 `AircraftWars` 和 `DynamicParticlePanel` 偏向 Canvas 可视化与动画机制
+- `LotteryGame` 偏向 Vite + TypeScript 工程化实践与交互逻辑
 - `TailwindCss` 更偏向 Node.js 文件处理、类名扫描和 CSS 生成流程练习
 
 ## 🛠 开发指引
