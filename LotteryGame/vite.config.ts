@@ -7,10 +7,14 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
-  /** 相对路径，双击本地 HTML 时仍能加载内联/相对资源 */
-  base: './',
-  plugins: [
-    /** 打包为单 HTML（脚本与样式内联） */
-    viteSingleFile(),
-  ],
+    /** 相对路径，双击本地 HTML 时仍能加载内联/相对资源 */
+    base: './',
+    plugins: [
+        /** 打包为单 HTML（脚本与样式内联） */
+        viteSingleFile()
+    ],
+    server: {
+        host: '0.0.0.0',
+        open: true
+    }
 });
