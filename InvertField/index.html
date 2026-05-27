@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>快乐的大葱鸭</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 鼠标跟随的反色圆，具体移动逻辑在 js/app.js 中。 -->
+  <div class="cursor-orb" aria-hidden="true"></div>
+
+  <main class="page-shell">
+    <section class="hero">
+      <!-- 背景层：canvas 负责字符墙，下面几个 div 负责暗角和压暗效果。 -->
+      <canvas id="matrixCanvas" class="matrix-canvas" aria-hidden="true"></canvas>
+      <div class="hero-vignette outer" aria-hidden="true"></div>
+      <div class="hero-vignette center" aria-hidden="true"></div>
+      <div class="hero-overlay" aria-hidden="true"></div>
+
+      <!-- 页面唯一可见文案，由 JS 做打字进入效果。 -->
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span id="typedTitle"></span><span class="type-cursor">_</span>
+        </h1>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

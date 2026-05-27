@@ -1,0 +1,176 @@
+:root {
+  /* 全局色值集中放在这里，后续想换整体气质先改这一组。 */
+  --bg: #000;
+  --text: #f6f3ec;
+  --muted: rgba(246, 243, 236, 0.56);
+  --dim: rgba(246, 243, 236, 0.28);
+  --line: rgba(255, 255, 255, 0.18);
+  --amber: #e6a657;
+  --blue: #8fb3ca;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+a,
+button {
+  cursor: none;
+}
+
+.page-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero {
+  /* 首屏占满浏览器高度，内容始终压在画面中心。 */
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  padding: 70px 20px;
+  overflow: hidden;
+  place-items: center;
+}
+
+.matrix-canvas,
+.hero-vignette,
+.hero-overlay {
+  /* 背景相关图层全部铺满首屏。 */
+  position: absolute;
+  inset: 0;
+}
+
+.matrix-canvas {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.hero-vignette {
+  pointer-events: none;
+}
+
+.hero-vignette.outer {
+  /* 外圈暗角让边缘更沉，接近原站首屏的包裹感。 */
+  background: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, #000);
+}
+
+.hero-vignette.center {
+  /* 中心暗角压住字符墙，避免文字背后的字符抢主体文案。 */
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0) 60%);
+}
+
+.hero-overlay {
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(980px, 100%);
+  text-align: center;
+}
+
+.hero-title {
+  /* 标题用渐变文字，白色圆形经过时会被 mix-blend-mode 局部反色。 */
+  min-height: clamp(86px, 11vw, 142px);
+  margin: 0;
+  font-size: clamp(44px, 8vw, 98px);
+  font-weight: 700;
+  line-height: 0.95;
+  color: transparent;
+  text-align: center;
+  background: linear-gradient(90deg, #7e8f9e, #bac9d4 42%, #fff 72%, #e8f5ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+
+.type-cursor {
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.cursor-orb {
+  /* difference 是局部变色的关键：圆覆盖到哪一部分，哪一部分像素就反色。 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+  background: #f6f3ec;
+  border-radius: 50%;
+  opacity: 0;
+  mix-blend-mode: difference;
+  transform: translate3d(-50%, -50%, 0) scale(0.72);
+  transition:
+    opacity 0.18s ease,
+    width 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.08s linear;
+  will-change: transform;
+}
+
+.cursor-orb.is-visible {
+  opacity: 1;
+}
+
+.cursor-orb.is-pressed {
+  width: 150px;
+  height: 150px;
+}
+
+@media (max-width: 760px) {
+  /* 触屏设备没有鼠标悬停，隐藏自定义光标并恢复系统默认行为。 */
+  body,
+  a,
+  button {
+    cursor: auto;
+  }
+
+  .cursor-orb {
+    display: none;
+  }
+
+  .hero {
+    padding: 64px 16px;
+  }
+
+  .hero-title {
+    min-height: 84px;
+    font-size: clamp(34px, 11vw, 48px);
+    line-height: 1.05;
+  }
+}
