@@ -1,0 +1,235 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    font-family: 'KeAi', sans-serif;
+    overflow: hidden;
+}
+
+@font-face {
+    font-family: 'KeAi';
+    src: url('../font/keai.ttf') format('truetype');
+}
+
+.start-button {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 40px;
+    font-size: 24px;
+    font-family: 'KeAi', sans-serif;
+    color: #fff;
+    background: linear-gradient(45deg, #ff4081, #ff79b0);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: buttonFadeIn 1s ease 0.5s forwards;
+    z-index: 100000;
+}
+
+.start-button:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
+    background: linear-gradient(45deg, #ff79b0, #ff4081);
+}
+
+.start-button:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+@keyframes buttonFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* 添加心形装饰效果 */
+.start-button::before,
+.start-button::after {
+    content: '♥';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.start-button::before {
+    left: 15px;
+}
+
+.start-button::after {
+    right: 15px;
+}
+
+.start-button:hover::before {
+    left: 10px;
+}
+
+.start-button:hover::after {
+    right: 10px;
+}
+
+
+.loading-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    text-align: center;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin: 20px 0;
+    box-shadow: 0 0 10px rgba(255, 64, 129, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4081, #ff79b0, #ff4081);
+    background-size: 200% 100%;
+    border-radius: 10px;
+    animation: gradientMove 2s linear infinite;
+    position: relative;
+    transition: width 0.3s ease;
+}
+
+.loading-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    animation: shimmer 1.5s infinite;
+}
+
+.loading-text {
+    color: #ff4081;
+    font-family: 'KeAi', sans-serif;
+    font-size: 20px;
+    margin-top: 15px;
+    min-height: 1.5em;
+    white-space: nowrap;
+    word-break: keep-all;
+    text-shadow: 0 0 10px rgba(255, 64, 129, 0.3);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loading-subtext {
+    color: rgba(255, 255, 255, 0.72);
+    font-family: 'KeAi', sans-serif;
+    font-size: 10px;
+    line-height: 1.4;
+    margin-top: 6px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(255, 64, 129, 0.24);
+}
+
+.loading-hearts {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    top: -40px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.heart {
+    font-size: 20px;
+    color: #ff4081;
+    animation: heartBeat 1s ease-in-out infinite;
+}
+
+.heart:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.heart:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes heartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.start-button.fade-out {
+    opacity: 0 !important;
+    /* 确保覆盖动画效果 */
+    transform: translate(-50%, -50%) scale(0.9);
+    pointer-events: none;
+}
