@@ -22,7 +22,7 @@
 
 @font-face {
     font-family: 'KeAi';
-    src: url('/font/keai.ttf') format('truetype');
+    src: url('https://cdn.dacongya.cn/fonts/keai.woff2') format('woff2');
 }
 
 :where(body.animation-route) .start-button {

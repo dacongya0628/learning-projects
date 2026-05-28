@@ -26,8 +26,6 @@
 |-- css/
 |   |-- style.css                      # 全局样式、按钮、加载条和基础动画
 |   `-- config.css                     # 配置页样式
-|-- font/
-|   `-- keai.ttf                       # 自定义字体
 |-- imgs/
 |   |-- 1.jpg ... 45.jpg               # 照片墙原图资源
 |   `-- icon.png                       # 页面图标
@@ -379,7 +377,7 @@ node scripts/build-bundle.js
 
 这是纯静态项目，可以部署到任意静态文件服务器，例如 Nginx、GitHub Pages、Netlify、Vercel 或对象存储静态站点。
 
-部署时保持目录结构不变：
+部署时保持目录结构不变。字体通过 `https://cdn.dacongya.cn/fonts/keai.woff2` 加载，不需要上传本地 `font/` 目录：
 
 ```text
 /index.html
@@ -389,7 +387,6 @@ node scripts/build-bundle.js
 /js/bundle.js
 /js/configPage.js
 /imgs/1.jpg
-/font/keai.ttf
 /music/everyTimeWeTouch.mp3
 ```
 

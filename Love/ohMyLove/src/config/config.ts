@@ -13,8 +13,8 @@ export const RESOURCE_CONFIG = {
         {
             // 注册到浏览器里的字体名，对应 CSS/Canvas 中的 font-family。
             name: 'KeAi',
-            // 字体文件路径，以当前页面所在目录为基准解析。
-            path: './font/keai.ttf'
+            // 字体文件地址。这里走 CDN，避免项目包里继续携带较大的字体文件。
+            path: 'https://cdn.dacongya.cn/fonts/keai.woff2'
         }
     ],
 
@@ -568,9 +568,9 @@ export const PHOTO_WALL_TIMING_CONFIG = {
     // 预留配置：分批加载时每批之间的等待时间，当前主流程未直接读取。
     LAZY_LOAD_BATCH_DELAY: 700,
     // 每张中心像素化预览完成后，等待多久再统计完成次数。
-    CENTER_DISPLAY_SETTLE_DELAY: 1000,
+    CENTER_DISPLAY_SETTLE_DELAY: 1500,
     // 达到设定照片数量后，等待多久派发最终文案事件。
-    FINAL_MESSAGE_EVENT_DELAY: 1000,
+    FINAL_MESSAGE_EVENT_DELAY: 2000,
 
     // 达到设定次数后，照片墙继续随机高亮的循环节奏。
     CONTINUOUS_SELECTION: {

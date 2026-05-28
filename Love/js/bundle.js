@@ -18,8 +18,8 @@ const RESOURCE_CONFIG = {
         {
             // 注册到浏览器里的字体名，对应 CSS/Canvas 中的 font-family。
             name: 'KeAi',
-            // 字体文件路径，以当前页面所在目录为基准解析。
-            path: './font/keai.ttf'
+            // 字体文件地址。这里走 CDN，避免项目包里继续携带较大的字体文件。
+            path: 'https://cdn.dacongya.cn/fonts/keai.woff2'
         }
     ],
 
